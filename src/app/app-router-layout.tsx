@@ -8,8 +8,9 @@ export function AppRouterLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   const isAdminRoute = pathname.startsWith('/admin');
+  const isLoginRoute = pathname === '/login';
 
-  if (isAdminRoute) {
+  if (isAdminRoute || isLoginRoute) {
     return <>{children}</>;
   }
 

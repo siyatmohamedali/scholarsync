@@ -1,23 +1,69 @@
 "use client";
 
 import Link from 'next/link';
-import { GraduationCap, Menu, ShieldCheck } from 'lucide-react';
+import { GraduationCap, Menu, LogIn, LogOut, ShieldCheck, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { useUser, useAuth } from '@/firebase';
+import { signOut } from 'firebase/auth';
+import { useToast } from '@/hooks/use-toast';
 
 export function Header() {
   const pathname = usePathname();
+  const { user, isUserLoading } = useUser();
+  const auth = useAuth();
+  const router = useRouter();
+  const { toast } = useToast();
   
-  if (pathname.startsWith('/admin')) {
-    return null; // The admin layout has its own header
+  if (pathname.startsWith('/admin') || pathname.startsWith('/login')) {
+    return null;
   }
+
+  const handleLogout = async () => {
+    if (!auth) return;
+    await signOut(auth);
+    toast({ title: 'Logged out successfully.' });
+    router.push('/');
+  };
 
   const navItems = [
     { href: '/scholarships', label: 'Scholarships' },
     { href: '/blog', label: 'Blog' },
   ];
+
+  const AdminButton = () => {
+    if (isUserLoading) {
+      return <Button variant="ghost" size="icon" disabled><Loader2 className="h-4 w-4 animate-spin" /></Button>;
+    }
+
+    if (user) {
+      return (
+        <>
+          <Button asChild variant="ghost">
+            <Link href="/admin">
+              <ShieldCheck className="mr-2 h-4 w-4" />
+              Admin
+            </Link>
+          </Button>
+          <Button variant="ghost" onClick={handleLogout}>
+            <LogOut className="mr-2 h-4 w-4" />
+            Logout
+          </Button>
+        </>
+      );
+    }
+
+    return (
+      <Button asChild variant="ghost">
+        <Link href="/login">
+          <LogIn className="mr-2 h-4 w-4" />
+          Admin Login
+        </Link>
+      </Button>
+    );
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -43,13 +89,10 @@ export function Header() {
           </nav>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-2">
-          <Button asChild variant="ghost">
-              <Link href="/admin">
-                <ShieldCheck className="mr-2 h-4 w-4" />
-                Admin
-              </Link>
-          </Button>
-          {/* Mobile menu */}
+          <div className="hidden md:flex">
+            <AdminButton />
+          </div>
+          
           <div className="md:hidden">
             <Sheet>
               <SheetTrigger asChild>
@@ -79,12 +122,20 @@ export function Header() {
                   ))}
                    <SheetClose asChild>
                        <Link
-                        href="/admin"
+                        href={user ? "/admin" : "/login"}
                         className="text-lg font-medium transition-colors hover:text-primary"
                       >
-                        Admin
+                        {user ? 'Admin Dashboard' : 'Admin Login'}
                       </Link>
                     </SheetClose>
+                    {user && (
+                       <SheetClose asChild>
+                          <Button variant="ghost" onClick={handleLogout} className="justify-start text-lg font-medium">
+                            <LogOut className="mr-2 h-5 w-5" />
+                            Logout
+                          </Button>
+                       </SheetClose>
+                    )}
                 </nav>
               </SheetContent>
             </Sheet>

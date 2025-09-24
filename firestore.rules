@@ -1,156 +1,102 @@
-/**
- * @fileoverview Firestore Security Rules for ScholarSync.
- *
- * Core Philosophy: This ruleset focuses on public read access for most data,
- * with admin-restricted write access. Administrative privileges are granted based
- * on the existence of a document in the `/roles_admin/{userId}` collection.
- * No user-specific ownership is enforced, except for subscriber data where the
- * UID is used as the document ID.
- *
- * Data Structure:
- * - /scholarships/{scholarshipId}: Public scholarship data, admin-managed.
- * - /categories/{categoryId}: Public category data, admin-managed.
- * - /blog_posts/{blogPostId}: Public blog post data, admin-managed.
- * - /ad_placements/{adPlacementId}: Public ad placement data, admin-managed.
- * - /subscribers/{subscriberId}: Subscriber data. Public create, otherwise admin managed.
- * - /roles_admin/{userId}: Admin role assignments based on document existence.
- *
- * Key Security Decisions:
- * - Public read access to scholarships, categories, blog posts, and ad placements.
- * - Admin-only write access to scholarships, categories, blog posts, and ad placements.
- * - Existence-based admin role assignment via /roles_admin/{userId}.
- * - No user-generated content beyond email subscriptions.
- *
- * Denormalization for Authorization:
- * - Admin status is determined by the existence of a document in `/roles_admin/{userId}`,
- *   avoiding the need for complex `get()` calls during write operations.
- *
- * Structural Segregation:
- * - Public data (scholarships, categories, blog posts, ads) is stored in separate
- *   top-level collections to allow for independent security policies.
- */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Checks if the user is signed in.
-     */
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    /**
-     * @description Checks if the user is an admin by verifying the existence of a document in `/roles_admin/{userId}`.
-     */
-    function isAdmin() {
-      return exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
-    }
-
-    /**
-     * @description Checks if the user is the owner of the document (UID matches document ID).
-     */
-    function isOwner(userId) {
-        return request.auth.uid == userId;
-    }
-
-    /**
-     * @description Checks if the user is an existing owner (UID matches document ID and document exists).
-     */
-    function isExistingOwner(userId) {
-        return isOwner(userId) && resource != null;
-    }
-
-    /**
-     * @description Rules for the /scholarships/{scholarshipId} collection.
-     * @path /scholarships/{scholarshipId}
-     * @allow (get, list): Anyone can read scholarship data.
-     * @allow (create, update, delete): Only admins can modify scholarship data.
-     * @deny (create): Non-admins cannot create scholarships.
-     * @principle Public read access with admin-only writes.
-     */
-    match /scholarships/{scholarshipId} {
-      allow get, list: if true;
-      allow create: if isAdmin();
-      allow update: if isAdmin() && resource != null;
-      allow delete: if isAdmin() && resource != null;
-    }
-
-    /**
-     * @description Rules for the /categories/{categoryId} collection.
-     * @path /categories/{categoryId}
-     * @allow (get, list): Anyone can read category data.
-     * @allow (create, update, delete): Only admins can modify category data.
-     * @deny (create): Non-admins cannot create categories.
-     * @principle Public read access with admin-only writes.
-     */
-    match /categories/{categoryId} {
-      allow get, list: if true;
-      allow create: if isAdmin();
-      allow update: if isAdmin() && resource != null;
-      allow delete: if isAdmin() && resource != null;
-    }
-
-    /**
-     * @description Rules for the /blog_posts/{blogPostId} collection.
-     * @path /blog_posts/{blogPostId}
-     * @allow (get, list): Anyone can read blog post data.
-     * @allow (create, update, delete): Only admins can modify blog post data.
-     * @deny (create): Non-admins cannot create blog posts.
-     * @principle Public read access with admin-only writes.
-     */
-    match /blog_posts/{blogPostId} {
-      allow get, list: if true;
-      allow create: if isAdmin();
-      allow update: if isAdmin() && resource != null;
-      allow delete: if isAdmin() && resource != null;
-    }
-
-    /**
-     * @description Rules for the /ad_placements/{adPlacementId} collection.
-     * @path /ad_placements/{adPlacementId}
-     * @allow (get, list): Anyone can read ad placement data.
-     * @allow (create, update, delete): Only admins can modify ad placement data.
-     * @deny (create): Non-admins cannot create ad placements.
-     * @principle Public read access with admin-only writes.
-     */
-    match /ad_placements/{adPlacementId} {
-      allow get, list: if true;
-      allow create: if isAdmin();
-      allow update: if isAdmin() && resource != null;
-      allow delete: if isAdmin() && resource != null;
-    }
-
-    /**
-     * @description Rules for the /subscribers/{subscriberId} collection.
-     * @path /subscribers/{subscriberId}
-     * @allow (create): Anyone can create a subscriber (e.g., for newsletter signup).
-     * @allow (get, list, update, delete): Only admins can manage subscribers.
-     * @deny (update, delete): Non-admins cannot update or delete subscribers.
-     * @principle Public create access with admin-only management.
-     */
-    match /subscribers/{subscriberId} {
-      allow create: if isSignedIn() && request.auth.uid == subscriberId;
-      allow get, list: if isAdmin();
-      allow update: if isAdmin() && resource != null;
-      allow delete: if isAdmin() && resource != null;
-    }
-
-    /**
-     * @description Rules for the /roles_admin/{userId} collection.
+     * @description Grants admin privileges based on the existence of a document in /roles_admin/{userId}.
      * @path /roles_admin/{userId}
-     * @allow (get): Anyone can read the role of other users
-     * @allow (create): Only the user can create their roles_admin document
-     * @allow (update, delete): Only the user can manage their roles_admin document
-     * @allow list: if false;
-     * @principle Existence-based admin role assignment.
+     * @allow (create) - If the user's ID matches the document ID.
+     * @deny (create) - If the user's ID does not match the document ID.
+     * @principle Enforces document ownership for writes.
      */
     match /roles_admin/{userId} {
-        allow get: if true; // Allowing reading.
-        allow create: if isOwner(userId);
-        allow update: if isExistingOwner(userId);
-        allow delete: if isExistingOwner(userId);
-        allow list: if false;
+      function isAdmin(userId) {
+        return exists(/databases/$(database)/documents/roles_admin/$(userId));
+      }
+      allow get: if false;
+      allow list: if false;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    /**
+     * @description Allows public read access and admin-only write access for scholarships.
+     * @path /scholarships/{scholarshipId}
+     * @allow (get, list) - Anyone can read scholarship data.
+     * @allow (create, update, delete) - Only admins can modify scholarship data.
+     * @deny (create, update, delete) - Non-admins cannot modify scholarship data.
+     * @principle Restricts write access to authorized admins.
+     */
+    match /scholarships/{scholarshipId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if request.auth != null && isAdmin(request.auth.uid);
+      allow update: if request.auth != null && isAdmin(request.auth.uid);
+      allow delete: if request.auth != null && isAdmin(request.auth.uid);
+    }
+
+    /**
+     * @description Allows public read access and admin-only write access for categories.
+     * @path /categories/{categoryId}
+     * @allow (get, list) - Anyone can read category data.
+     * @allow (create, update, delete) - Only admins can modify category data.
+     * @deny (create, update, delete) - Non-admins cannot modify category data.
+     * @principle Restricts write access to authorized admins.
+     */
+    match /categories/{categoryId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if request.auth != null && isAdmin(request.auth.uid);
+      allow update: if request.auth != null && isAdmin(request.auth.uid);
+      allow delete: if request.auth != null && isAdmin(request.auth.uid);
+    }
+
+    /**
+     * @description Allows public read access and admin-only write access for blog posts.
+     * @path /blog_posts/{blogPostId}
+     * @allow (get, list) - Anyone can read blog post data.
+     * @allow (create, update, delete) - Only admins can modify blog post data.
+     * @deny (create, update, delete) - Non-admins cannot modify blog post data.
+     * @principle Restricts write access to authorized admins.
+     */
+    match /blog_posts/{blogPostId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if request.auth != null && isAdmin(request.auth.uid);
+      allow update: if request.auth != null && isAdmin(request.auth.uid);
+      allow delete: if request.auth != null && isAdmin(request.auth.uid);
+    }
+
+    /**
+     * @description Allows public read access and admin-only write access for ad placements.
+     * @path /ad_placements/{adPlacementId}
+     * @allow (get, list) - Anyone can read ad placement data.
+     * @allow (create, update, delete) - Only admins can modify ad placement data.
+     * @deny (create, update, delete) - Non-admins cannot modify ad placement data.
+     * @principle Restricts write access to authorized admins.
+     */
+    match /ad_placements/{adPlacementId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if request.auth != null && isAdmin(request.auth.uid);
+      allow update: if request.auth != null && isAdmin(request.auth.uid);
+      allow delete: if request.auth != null && isAdmin(request.auth.uid);
+    }
+
+    /**
+     * @description Allows anyone to create a subscriber entry, but restricts listing and other modifications.
+     * @path /subscribers/{subscriberId}
+     * @allow (create) - Anyone can subscribe to the newsletter.
+     * @deny (get, list, update, delete) - No one can read, list, update, or delete subscriber data.
+     * @principle Allows open subscription while protecting subscriber privacy.
+     */
+    match /subscribers/{subscriberId} {
+      allow get: if false;
+      allow list: if false;
+      allow create: if true;
+      allow update: if false;
+      allow delete: if false;
     }
   }
 }

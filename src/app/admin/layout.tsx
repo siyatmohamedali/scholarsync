@@ -1,24 +1,69 @@
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   BookOpen,
   GraduationCap,
   LayoutDashboard,
   PlusCircle,
+  Loader2,
+  LogOut,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { useUser, useAuth } from '@/firebase';
+import { signOut } from 'firebase/auth';
+import { useToast } from '@/hooks/use-toast';
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Mocking nav items for now
+  const { user, isUserLoading } = useUser();
+  const auth = useAuth();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.push('/login');
+    }
+  }, [user, isUserLoading, router]);
+
+  const handleLogout = async () => {
+    if (!auth) return;
+    try {
+      await signOut(auth);
+      toast({
+        title: 'Logged Out',
+        description: 'You have been successfully logged out.',
+      });
+      router.push('/login');
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Logout Failed',
+        description: 'An error occurred while logging out.',
+      });
+    }
+  };
+
   const navItems = [
     { href: '/admin/scholarships', label: 'Scholarships', icon: GraduationCap },
     { href: '/admin/blog', label: 'Blog Posts', icon: BookOpen },
     { href: '/admin/generate', label: 'New Scholarship', icon: PlusCircle },
   ];
+
+  if (isUserLoading || !user) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="grid min-h-screen w-full lg:grid-cols-[280px_1fr]">
@@ -44,13 +89,17 @@ export default function AdminLayout({
               ))}
             </nav>
           </div>
+          <div className="mt-auto p-4">
+              <Button variant="ghost" className="w-full justify-start" onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Logout
+              </Button>
+          </div>
         </div>
       </div>
       <div className="flex flex-col">
         <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-6 lg:h-[60px]">
-          {/* Mobile Nav could go here */}
           <div className="w-full flex-1">
-            {/* Can add a search or other header elements */}
           </div>
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
