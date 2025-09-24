@@ -1,15 +1,30 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { AdBanner } from '@/components/ad-banner';
 import { ScholarshipCard } from '@/components/scholarship-card';
 import { BlogPostCard } from '@/components/blog-post-card';
-import { scholarships, blogPosts } from '@/lib/data';
+import { blogPosts } from '@/lib/data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Loader2 } from 'lucide-react';
+import { useCollection } from '@/firebase';
+import { collection, query, orderBy, limit } from 'firebase/firestore';
+import { useFirestore } from '@/firebase';
+import { useMemo } from 'react';
+import type { Scholarship } from '@/lib/types';
 
 export default function Home() {
   const heroImage = PlaceHolderImages.find(img => img.id === 'hero-background');
+  const firestore = useFirestore();
+
+  const scholarshipsQuery = useMemo(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'scholarships'), orderBy('deadline', 'desc'), limit(2));
+  }, [firestore]);
+
+  const { data: scholarships, isLoading } = useCollection<Scholarship>(scholarshipsQuery);
 
   return (
     <div className="flex flex-col">
@@ -48,11 +63,23 @@ export default function Home() {
             {/* Featured Scholarships */}
             <section>
               <h2 className="mb-6 font-headline text-3xl font-bold">Featured Scholarships</h2>
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                {scholarships.slice(0, 2).map((scholarship) => (
-                  <ScholarshipCard key={scholarship.id} scholarship={scholarship} />
-                ))}
-              </div>
+              {isLoading && (
+                <div className="flex justify-center items-center h-64">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              )}
+              {!isLoading && scholarships && (
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  {scholarships.map((scholarship) => (
+                    <ScholarshipCard key={scholarship.id} scholarship={scholarship} />
+                  ))}
+                </div>
+              )}
+              {!isLoading && !scholarships?.length && (
+                <div className="text-center text-muted-foreground py-12">
+                    No scholarships to display yet.
+                </div>
+              )}
               <div className="mt-8 text-center">
                 <Button asChild variant="outline">
                   <Link href="/scholarships">View All Scholarships</Link>
