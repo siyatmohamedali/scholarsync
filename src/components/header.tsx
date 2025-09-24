@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { GraduationCap, Menu, LogIn, LogOut, ShieldCheck, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useUser, useAuth } from '@/firebase';
@@ -102,10 +102,13 @@ export function Header() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-                <Link href="/" className="mb-8 flex items-center space-x-2">
-                  <GraduationCap className="h-6 w-6 text-primary" />
-                  <span className="font-bold font-headline">ScholarSync</span>
-                </Link>
+                <SheetHeader>
+                  <SheetTitle className="sr-only">Main Menu</SheetTitle>
+                  <Link href="/" className="mb-8 flex items-center space-x-2">
+                    <GraduationCap className="h-6 w-6 text-primary" />
+                    <span className="font-bold font-headline">ScholarSync</span>
+                  </Link>
+                </SheetHeader>
                 <nav className="flex flex-col gap-4">
                   {navItems.map((item) => (
                     <SheetClose asChild key={item.href}>
