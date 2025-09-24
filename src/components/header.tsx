@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { GraduationCap, Menu } from 'lucide-react';
+import { GraduationCap, Menu, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet';
 import { usePathname } from 'next/navigation';
@@ -9,10 +9,14 @@ import { cn } from '@/lib/utils';
 
 export function Header() {
   const pathname = usePathname();
+  
+  if (pathname.startsWith('/admin')) {
+    return null; // The admin layout has its own header
+  }
+
   const navItems = [
     { href: '/scholarships', label: 'Scholarships' },
     { href: '/blog', label: 'Blog' },
-    { href: '/generate', label: 'Create Post' },
   ];
 
   return (
@@ -39,6 +43,12 @@ export function Header() {
           </nav>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-2">
+          <Button asChild variant="ghost">
+              <Link href="/admin">
+                <ShieldCheck className="mr-2 h-4 w-4" />
+                Admin
+              </Link>
+          </Button>
           {/* Mobile menu */}
           <div className="md:hidden">
             <Sheet>
@@ -67,6 +77,14 @@ export function Header() {
                       </Link>
                     </SheetClose>
                   ))}
+                   <SheetClose asChild>
+                       <Link
+                        href="/admin"
+                        className="text-lg font-medium transition-colors hover:text-primary"
+                      >
+                        Admin
+                      </Link>
+                    </SheetClose>
                 </nav>
               </SheetContent>
             </Sheet>
