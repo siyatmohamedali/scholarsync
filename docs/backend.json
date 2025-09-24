@@ -1,0 +1,280 @@
+{
+  "entities": {
+    "Scholarship": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Scholarship",
+      "type": "object",
+      "description": "Represents a scholarship opportunity.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the scholarship."
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the scholarship."
+        },
+        "description": {
+          "type": "string",
+          "description": "A description of the scholarship."
+        },
+        "eligibility": {
+          "type": "string",
+          "description": "The eligibility criteria for the scholarship."
+        },
+        "deadline": {
+          "type": "string",
+          "description": "The application deadline for the scholarship.",
+          "format": "date-time"
+        },
+        "applyLink": {
+          "type": "string",
+          "description": "The official link to apply for the scholarship.",
+          "format": "uri"
+        },
+        "categoryIds": {
+          "type": "array",
+          "description": "References to Categories. (Relationship: Category N:N Scholarship)",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+        "eligibility",
+        "deadline",
+        "applyLink"
+      ]
+    },
+    "Category": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Category",
+      "type": "object",
+      "description": "Represents a category for scholarships.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the category."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the category (e.g., Education, Athletes)."
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "BlogPost": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "BlogPost",
+      "type": "object",
+      "description": "Represents a blog post related to scholarships.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the blog post."
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the blog post."
+        },
+        "content": {
+          "type": "string",
+          "description": "The content of the blog post."
+        },
+        "author": {
+          "type": "string",
+          "description": "The author of the blog post."
+        },
+        "datePublished": {
+          "type": "string",
+          "description": "The date when the blog post was published.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "content",
+        "author",
+        "datePublished"
+      ]
+    },
+    "AdPlacement": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "AdPlacement",
+      "type": "object",
+      "description": "Represents an advertisement placement on the website.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the ad placement."
+        },
+        "location": {
+          "type": "string",
+          "description": "The location of the ad placement (e.g., top banner, sidebar)."
+        },
+        "content": {
+          "type": "string",
+          "description": "The content of the advertisement (e.g., HTML, image URL)."
+        },
+        "startDate": {
+          "type": "string",
+          "description": "The start date of the ad campaign.",
+          "format": "date-time"
+        },
+        "endDate": {
+          "type": "string",
+          "description": "The end date of the ad campaign.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "location",
+        "content",
+        "startDate",
+        "endDate"
+      ]
+    },
+    "Subscriber": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Subscriber",
+      "type": "object",
+      "description": "Represents a subscriber to the newsletter.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the subscriber."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the subscriber.",
+          "format": "email"
+        },
+        "subscribedDate": {
+          "type": "string",
+          "description": "The date when the user subscribed to the newsletter.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "subscribedDate"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/scholarships/{scholarshipId}",
+        "definition": {
+          "entityName": "Scholarship",
+          "schema": {
+            "$ref": "#/backend/entities/Scholarship"
+          },
+          "description": "Collection of scholarship entries, pulled from external sources. Admin-managed write access.",
+          "params": [
+            {
+              "name": "scholarshipId",
+              "description": "Unique identifier for the scholarship."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/categories/{categoryId}",
+        "definition": {
+          "entityName": "Category",
+          "schema": {
+            "$ref": "#/backend/entities/Category"
+          },
+          "description": "Collection of scholarship categories. Admin-managed write access.",
+          "params": [
+            {
+              "name": "categoryId",
+              "description": "Unique identifier for the category."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/blog_posts/{blogPostId}",
+        "definition": {
+          "entityName": "BlogPost",
+          "schema": {
+            "$ref": "#/backend/entities/BlogPost"
+          },
+          "description": "Collection of blog posts. Admin-managed write access.",
+          "params": [
+            {
+              "name": "blogPostId",
+              "description": "Unique identifier for the blog post."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/ad_placements/{adPlacementId}",
+        "definition": {
+          "entityName": "AdPlacement",
+          "schema": {
+            "$ref": "#/backend/entities/AdPlacement"
+          },
+          "description": "Collection of ad placements. Admin-managed write access.",
+          "params": [
+            {
+              "name": "adPlacementId",
+              "description": "Unique identifier for the ad placement."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/subscribers/{subscriberId}",
+        "definition": {
+          "entityName": "Subscriber",
+          "schema": {
+            "$ref": "#/backend/entities/Subscriber"
+          },
+          "description": "Collection of newsletter subscribers.",
+          "params": [
+            {
+              "name": "subscriberId",
+              "description": "Unique identifier for the subscriber."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/roles_admin/{userId}",
+        "definition": {
+          "entityName": "roles_admin",
+          "schema": {
+            "$ref": "#/backend/entities/Subscriber"
+          },
+          "description": "Documents in this collection grant admin privileges to the user with the corresponding UID. Existence-based role assignment.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase UID of the administrator."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore data structure is designed to support the ScholarSync application's key features, including automated scholarship aggregation, categorized listings, blog posts, and ad placements, while adhering to the principles of Authorization Independence, Clarity of Intent, DBAC, and QAPs. \n\n**Authorization Independence:** The design avoids hierarchical authorization dependencies by not relying on `get()` calls in security rules. This is achieved by ensuring that access control is primarily path-based (e.g., `/roles_admin/{uid}` for admin roles) or based on denormalized data (though, in this case, the data does not require explicit user-based authorization beyond admins). This enables atomic operations and simplifies debugging.\n\n**Structural Segregation:** Collections are segregated based on their security requirements. Scholarships, blog posts, ads, categories, and subscribers are stored in separate top-level collections, each with distinct security considerations.\n\n**Access Modeling:**\n*   Admin access is modeled using the `/roles_admin/{uid}` collection. The existence of a document at this path grants admin privileges.\n*   Other data (scholarships, blog posts, categories, ads, and subscribers) is generally publicly accessible (read) or restricted to admin write access, and no user-specific data is stored.\n\n**QAPs (Rules are not Filters):** The structure supports secure list operations by ensuring that listing documents does not inadvertently expose unauthorized data. For the most part, list operations are permitted for all roles. Admin create/update/delete operations are restricted to accounts with admin access by checking against the roles collection. \n\n**Invariants:** Timestamps can be enforced via rules using `request.time`. Ownership is not modeled in this particular design since data is curated from public information sources and no user-generated content beyond newsletter subscriptions is considered."
+  }
+}
