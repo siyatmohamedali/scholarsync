@@ -1,3 +1,52 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-background",
+      "description": "A student studying in a library",
+      "imageUrl": "https://images.unsplash.com/photo-1752747115265-1e4cfb2c1212?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxzdHVkZW50JTIwbGlicmFyeXxlbnwwfHx8fDE3NTg3MDU2NDB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "student library"
+    },
+    {
+      "id": "scholarship-1",
+      "description": "Graduation caps in the air",
+      "imageUrl": "https://images.unsplash.com/photo-1733835085968-d586d44a31da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxncmFkdWF0aW9uJTIwY2VsZWJyYXRpb258ZW58MHx8fHwxNzU4NzA4MTQ3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "graduation celebration"
+    },
+    {
+      "id": "scholarship-2",
+      "description": "Athlete running on a track",
+      "imageUrl": "https://images.unsplash.com/photo-1454447170982-596ddff4606a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxhdGhsZXRlJTIwcnVubmluZ3xlbnwwfHx8fDE3NTg3NDM5OTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "athlete running"
+    },
+    {
+      "id": "scholarship-3",
+      "description": "Artist painting on a canvas",
+      "imageUrl": "https://images.unsplash.com/photo-1611244419377-b0a760c19719?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8YXJ0aXN0JTIwcGFpbnRpbmd8ZW58MHx8fHwxNzU4NzA0MjY2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "artist painting"
+    },
+    {
+      "id": "blog-1",
+      "description": "A person writing in a notebook",
+      "imageUrl": "https://images.unsplash.com/photo-1594997652537-2e2dce4ebf28?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8d3JpdGluZyUyMG5vdGVib29rfGVufDB8fHx8MTc1ODcwMTQ3OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "writing notebook"
+    },
+    {
+      "id": "blog-2",
+      "description": "Students collaborating on a project",
+      "imageUrl": "https://images.unsplash.com/photo-1758270704787-615782711641?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxzdHVkZW50cyUyMGNvbGxhYm9yYXRpbmd8ZW58MHx8fHwxNzU4Njg5Njk2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "students collaborating"
+    },
+    {
+      "id": "ad-banner-1",
+      "description": "Abstract geometric pattern",
+      "imageUrl": "https://images.unsplash.com/photo-1595411425732-e69c1abe2763?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdCUyMHBhdHRlcm58ZW58MHx8fHwxNzU4Njg1MDM2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "abstract pattern"
+    },
+    {
+      "id": "ad-banner-2",
+      "description": "Colorful abstract shapes",
+      "imageUrl": "https://images.unsplash.com/photo-1710244182004-1c708b3f146d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhYnN0cmFjdCUyMHNoYXBlc3xlbnwwfHx8fDE3NTg3MzEwNjB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "abstract shapes"
+    }
+  ]
 }
