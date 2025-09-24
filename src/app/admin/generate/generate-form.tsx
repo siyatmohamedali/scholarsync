@@ -12,7 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Wand2, Loader2, Save } from 'lucide-react';
 import type { GenerateScholarshipPostOutput } from '@/ai/flows/generate-scholarship-post';
 import { useRouter } from 'next/navigation';
-import { useFirestore } from '@/firebase';
+import { useFirestore, useUser } from '@/firebase';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { collection } from 'firebase/firestore';
 
@@ -34,9 +34,12 @@ function GenerateButton() {
 }
 
 function SaveButton({ onSave, isSaving }: { onSave: () => void; isSaving: boolean }) {
+    const { user, isUserLoading } = useUser();
+    const isDisabled = isSaving || isUserLoading || !user;
+
     return (
-        <Button onClick={onSave} disabled={isSaving} className="w-full">
-            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+        <Button onClick={onSave} disabled={isDisabled} className="w-full">
+            {isSaving || isUserLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
             Save & Publish Post
         </Button>
     )
@@ -87,7 +90,7 @@ export function GenerateForm() {
         return;
     }
     
-    startSavingTransition(async () => {
+    startSavingTransition(() => {
         const scholarshipsCollection = collection(firestore, 'scholarships');
         
         const newScholarship = {
@@ -102,22 +105,23 @@ export function GenerateForm() {
           imageHint: category.toLowerCase(),
         };
         
-        try {
-            await addDocumentNonBlocking(scholarshipsCollection, newScholarship);
-            toast({
-                title: 'Success!',
-                description: 'Scholarship saved successfully.',
+        addDocumentNonBlocking(scholarshipsCollection, newScholarship)
+            .then(() => {
+                toast({
+                    title: 'Success!',
+                    description: 'Scholarship saved successfully.',
+                });
+                setGeneratedPost(null);
+                router.push('/admin/scholarships');
+            })
+            .catch((e) => {
+                 const error = e instanceof Error ? e.message : 'An unknown error occurred.';
+                 toast({
+                     variant: 'destructive',
+                     title: 'Error saving post',
+                     description: error,
+                 });
             });
-            setGeneratedPost(null);
-            router.push('/admin/scholarships');
-        } catch (e) {
-            const error = e instanceof Error ? e.message : 'An unknown error occurred.';
-            toast({
-                variant: 'destructive',
-                title: 'Error saving post',
-                description: error,
-            });
-        }
     });
   }
 
