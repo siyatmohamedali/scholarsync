@@ -1,7 +1,7 @@
 import type { Scholarship, BlogPost } from './types';
 import { PlaceHolderImages } from './placeholder-images';
 
-const getImage = (id: string) => PlaceHolderImages.find(img => img.id === id) || { imageUrl: '', imageHint: '' };
+const getImage = (id: string) => PlaceHolderImages.find(img => img.id === id) || { imageUrl: 'https://picsum.photos/seed/placeholder/600/400', imageHint: 'placeholder' };
 
 export const scholarships: Scholarship[] = [
   {

@@ -1,13 +1,30 @@
+'use client';
+
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScholarshipCard } from '@/components/scholarship-card';
-import { scholarships } from '@/lib/data';
-import { Search } from 'lucide-react';
+import { Search, Loader2 } from 'lucide-react';
 import { AdBanner } from '@/components/ad-banner';
+import { useCollection } from '@/firebase/firestore/use-collection';
+import { collection, query } from 'firebase/firestore';
+import { useFirestore } from '@/firebase';
+import { useMemo } from 'react';
+import { Scholarship } from '@/lib/types';
 
 export default function ScholarshipsPage() {
-  const categories = [...new Set(scholarships.map(s => s.category))];
-  const allScholarships = [...scholarships, ...scholarships.map(s => ({...s, id: s.id + '1'}))];
+  const firestore = useFirestore();
+  
+  const scholarshipsQuery = useMemo(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'scholarships'));
+  }, [firestore]);
+
+  const { data: scholarships, isLoading } = useCollection<Scholarship>(scholarshipsQuery);
+
+  const categories = useMemo(() => {
+    if (!scholarships) return [];
+    return [...new Set(scholarships.map(s => s.category))];
+  }, [scholarships]);
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -57,11 +74,23 @@ export default function ScholarshipsPage() {
 
         {/* Scholarship List */}
         <main className="lg:col-span-3">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            {allScholarships.map((scholarship) => (
-              <ScholarshipCard key={scholarship.id} scholarship={scholarship} />
-            ))}
-          </div>
+          {isLoading && (
+            <div className="flex justify-center items-center h-64">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          )}
+          {!isLoading && scholarships && (
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              {scholarships.map((scholarship) => (
+                <ScholarshipCard key={scholarship.id} scholarship={scholarship} />
+              ))}
+            </div>
+          )}
+           {!isLoading && !scholarships?.length && (
+            <div className="flex justify-center items-center h-64 text-muted-foreground">
+                <p>No scholarships found.</p>
+            </div>
+           )}
         </main>
       </div>
     </div>
