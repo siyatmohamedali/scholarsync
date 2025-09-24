@@ -1,28 +1,26 @@
 'use client';
 
-import { useActionState, useEffect, useState } from 'react';
+import { useActionState, useEffect, useState, useTransition } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { generateAction, saveScholarshipAction } from './actions';
+import { generateAction } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import { Wand2, Loader2, Save } from 'lucide-react';
 import type { GenerateScholarshipPostOutput } from '@/ai/flows/generate-scholarship-post';
 import { useRouter } from 'next/navigation';
+import { useFirestore } from '@/firebase';
+import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { collection } from 'firebase/firestore';
 
 
 const initialGenerateState = {
   message: '',
   data: null,
   error: null,
-};
-
-const initialSaveState = {
-    message: '',
-    error: null,
 };
 
 function GenerateButton() {
@@ -35,11 +33,10 @@ function GenerateButton() {
   );
 }
 
-function SaveButton() {
-    const { pending } = useFormStatus();
+function SaveButton({ onSave, isSaving }: { onSave: () => void; isSaving: boolean }) {
     return (
-        <Button type="submit" disabled={pending} className="w-full">
-            {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+        <Button onClick={onSave} disabled={isSaving} className="w-full">
+            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
             Save & Publish Post
         </Button>
     )
@@ -47,10 +44,11 @@ function SaveButton() {
 
 export function GenerateForm() {
   const [generateState, formAction] = useActionState(generateAction, initialGenerateState);
-  const [saveState, saveAction] = useActionState(saveScholarshipAction, initialSaveState);
   const { toast } = useToast();
   const [generatedPost, setGeneratedPost] = useState<GenerateScholarshipPostOutput | null>(null);
   const router = useRouter();
+  const firestore = useFirestore();
+  const [isSaving, startSavingTransition] = useTransition();
 
   useEffect(() => {
     if (generateState.error) {
@@ -69,24 +67,59 @@ export function GenerateForm() {
     }
   }, [generateState, toast]);
 
-  useEffect(() => {
-    if (saveState.error) {
-      toast({
-        variant: 'destructive',
-        title: 'Error saving post',
-        description: saveState.error,
-      });
+  const handleSave = (form: HTMLFormElement) => {
+    if (!firestore) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Firestore is not available.' });
+        return;
     }
-    if (saveState.message && !saveState.error) {
-        toast({
-            title: 'Success!',
-            description: saveState.message,
-        });
-        setGeneratedPost(null);
-        router.push('/admin/scholarships');
-    }
-  }, [saveState, toast, router]);
+    
+    const formData = new FormData(form);
+    const title = formData.get('title') as string;
+    const description = formData.get('content') as string;
+    const link = formData.get('applicationLink') as string;
+    const amount = Number(formData.get('amount'));
+    const deadline = formData.get('deadline') as string;
+    const eligibility = (formData.get('eligibility') as string).split(',').map(s => s.trim());
+    const category = formData.get('category') as string;
 
+    if (!title || !description || !link || !deadline || !eligibility.length || !category) {
+        toast({ variant: 'destructive', title: 'Missing Fields', description: 'Please fill out all required fields.' });
+        return;
+    }
+    
+    startSavingTransition(async () => {
+        const scholarshipsCollection = collection(firestore, 'scholarships');
+        
+        const newScholarship = {
+          title,
+          description,
+          link,
+          amount,
+          deadline: new Date(deadline).toISOString(),
+          eligibility,
+          category,
+          imageUrl: `https://picsum.photos/seed/${Math.random()}/600/400`,
+          imageHint: category.toLowerCase(),
+        };
+        
+        try {
+            await addDocumentNonBlocking(scholarshipsCollection, newScholarship);
+            toast({
+                title: 'Success!',
+                description: 'Scholarship saved successfully.',
+            });
+            setGeneratedPost(null);
+            router.push('/admin/scholarships');
+        } catch (e) {
+            const error = e instanceof Error ? e.message : 'An unknown error occurred.';
+            toast({
+                variant: 'destructive',
+                title: 'Error saving post',
+                description: error,
+            });
+        }
+    });
+  }
 
   return (
     <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
@@ -119,7 +152,7 @@ export function GenerateForm() {
       </Card>
 
       <Card className="flex flex-col">
-        <form action={saveAction}>
+        <form id="save-scholarship-form" className="flex flex-col flex-grow" onSubmit={(e) => e.preventDefault()}>
             <CardHeader>
               <CardTitle>Generated Output</CardTitle>
               <CardDescription>Review and edit the generated scholarship post.</CardDescription>
@@ -168,7 +201,7 @@ export function GenerateForm() {
             </CardContent>
             {generatedPost && (
                 <CardFooter>
-                     <SaveButton />
+                     <SaveButton onSave={() => handleSave(document.getElementById('save-scholarship-form') as HTMLFormElement)} isSaving={isSaving} />
                 </CardFooter>
             )}
         </form>
