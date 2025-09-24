@@ -1,7 +1,7 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
-import { useEffect, useState } from 'react';
+import { useActionState, useEffect, useState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -46,8 +46,8 @@ function SaveButton() {
 }
 
 export function GenerateForm() {
-  const [generateState, formAction] = useFormState(generateAction, initialGenerateState);
-  const [saveState, saveAction] = useFormState(saveScholarshipAction, initialSaveState);
+  const [generateState, formAction] = useActionState(generateAction, initialGenerateState);
+  const [saveState, saveAction] = useActionState(saveScholarshipAction, initialSaveState);
   const { toast } = useToast();
   const [generatedPost, setGeneratedPost] = useState<GenerateScholarshipPostOutput | null>(null);
   const router = useRouter();
