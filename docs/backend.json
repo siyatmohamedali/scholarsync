@@ -117,29 +117,22 @@
         },
         "location": {
           "type": "string",
-          "description": "The location of the ad placement (e.g., top banner, sidebar)."
+          "description": "The location of the ad placement (e.g., top-banner, sidebar-1)."
         },
-        "content": {
+        "code": {
           "type": "string",
-          "description": "The content of the advertisement (e.g., HTML, image URL)."
+          "description": "The ad code snippet from the ad provider (e.g., Google AdSense)."
         },
-        "startDate": {
-          "type": "string",
-          "description": "The start date of the ad campaign.",
-          "format": "date-time"
-        },
-        "endDate": {
-          "type": "string",
-          "description": "The end date of the ad campaign.",
-          "format": "date-time"
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether the ad placement is currently active."
         }
       },
       "required": [
         "id",
         "location",
-        "content",
-        "startDate",
-        "endDate"
+        "code",
+        "enabled"
       ]
     },
     "Subscriber": {

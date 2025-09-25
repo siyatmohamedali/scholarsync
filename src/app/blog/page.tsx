@@ -22,7 +22,7 @@ export default function BlogPage() {
       </div>
       
       <div className="mb-12">
-        <AdBanner className="mx-auto h-24 w-full max-w-4xl" />
+        <AdBanner location="blog-banner" className="mx-auto h-24 w-full max-w-4xl" />
       </div>
 
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">

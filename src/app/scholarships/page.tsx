@@ -34,7 +34,7 @@ export default function ScholarshipsPage() {
       </header>
 
       <div className="mb-8">
-        <AdBanner className="mx-auto h-24 w-full max-w-4xl" />
+        <AdBanner location="scholarships-banner" className="mx-auto h-24 w-full max-w-4xl" />
       </div>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">

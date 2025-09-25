@@ -106,8 +106,8 @@ export default function Home() {
           {/* Sidebar for Ads */}
           <aside className="w-full space-y-8 lg:w-1/3">
             <h3 className="font-headline text-xl font-bold">Sponsors</h3>
-            <AdBanner className="h-64" />
-            <AdBanner className="h-96" />
+            <AdBanner location="sidebar-1" className="h-64" />
+            <AdBanner location="sidebar-2" className="h-96" />
           </aside>
         </div>
       </div>

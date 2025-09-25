@@ -21,3 +21,10 @@ export interface BlogPost {
   imageUrl: string;
   imageHint: string;
 }
+
+export interface AdPlacement {
+  id: string;
+  location: string;
+  code: string;
+  enabled: boolean;
+}

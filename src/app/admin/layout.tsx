@@ -10,6 +10,7 @@ import {
   PlusCircle,
   Loader2,
   LogOut,
+  BadgeDollarSign,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -55,6 +56,7 @@ export default function AdminLayout({
     { href: '/admin/scholarships', label: 'Scholarships', icon: GraduationCap },
     { href: '/admin/blog', label: 'Blog Posts', icon: BookOpen },
     { href: '/admin/generate', label: 'New Scholarship', icon: PlusCircle },
+    { href: '/admin/ads', label: 'Ads', icon: BadgeDollarSign },
   ];
 
   if (isUserLoading || !user) {
