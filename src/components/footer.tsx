@@ -11,9 +11,9 @@ export function Footer() {
             <span className="font-bold font-headline">ScholarSync</span>
           </div>
           <div className="flex space-x-6 text-sm text-foreground/60">
-            <Link href="#" className="hover:text-foreground/80">About Us</Link>
-            <Link href="#" className="hover:text-foreground/80">Contact</Link>
-            <Link href="#" className="hover:text-foreground/80">Privacy Policy</Link>
+            <Link href="/about" className="hover:text-foreground/80">About Us</Link>
+            <Link href="/contact" className="hover:text-foreground/80">Contact</Link>
+            <Link href="/privacy-policy" className="hover:text-foreground/80">Privacy Policy</Link>
           </div>
         </div>
         <div className="mt-8 text-center text-sm text-foreground/60">
