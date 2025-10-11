@@ -9,6 +9,11 @@ import { AppRouterLayout } from './app-router-layout';
 export const metadata: Metadata = {
   title: 'ScholarSync',
   description: 'Your gateway to scholarships and success.',
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
 };
 
 export default function RootLayout({
