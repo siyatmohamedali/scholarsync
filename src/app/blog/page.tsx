@@ -2,7 +2,6 @@ import { Input } from '@/components/ui/input';
 import { BlogPostCard } from '@/components/blog-post-card';
 import { blogPosts } from '@/lib/data';
 import { Search } from 'lucide-react';
-import { AdBanner } from '@/components/ad-banner';
 
 export default function BlogPage() {
   const allPosts = [...blogPosts, ...blogPosts.map(p => ({...p, id: p.id + '1'})), ...blogPosts.map(p => ({...p, id: p.id + '2'}))];
@@ -19,10 +18,6 @@ export default function BlogPage() {
           <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
           <Input placeholder="Search blog posts..." className="pl-10" />
         </div>
-      </div>
-      
-      <div className="mb-12">
-        <AdBanner location="blog-banner" className="mx-auto h-24 w-full max-w-4xl" />
       </div>
 
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
