@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScholarshipCard } from '@/components/scholarship-card';
 import { Search, Loader2 } from 'lucide-react';
-import { AdBanner } from '@/components/ad-banner';
+
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { collection, query } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
@@ -32,10 +32,6 @@ export default function ScholarshipsPage() {
         <h1 className="font-headline text-4xl font-bold md:text-5xl">Explore Scholarships</h1>
         <p className="mx-auto mt-2 max-w-2xl text-lg text-foreground/80">Find the perfect scholarship to fuel your dreams.</p>
       </header>
-
-      <div className="mb-8">
-        <AdBanner location="scholarships-banner" className="mx-auto h-24 w-full max-w-4xl" />
-      </div>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
         {/* Filters */}
