@@ -8,7 +8,9 @@ import {
   PlusCircle, 
   Users, 
   TrendingUp,
-  Loader2 
+  Loader2,
+  Upload,
+  FileSpreadsheet
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -118,7 +120,7 @@ export default function AdminPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button asChild>
                 <Link href="/admin/scholarships">
                   View All Scholarships
@@ -128,6 +130,12 @@ export default function AdminPage() {
                 <Link href="/admin/generate">
                   <PlusCircle className="mr-2 h-4 w-4" />
                   Add New
+                </Link>
+              </Button>
+              <Button asChild variant="secondary" size="sm">
+                <Link href="/admin/scholarships/bulk">
+                  <Upload className="mr-2 h-4 w-4" />
+                  Bulk Import
                 </Link>
               </Button>
             </div>
@@ -145,7 +153,7 @@ export default function AdminPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button asChild>
                 <Link href="/admin/blog">
                   View All Posts
@@ -155,6 +163,12 @@ export default function AdminPage() {
                 <Link href="/admin/blog/add">
                   <PlusCircle className="mr-2 h-4 w-4" />
                   Add New
+                </Link>
+              </Button>
+              <Button asChild variant="secondary" size="sm">
+                <Link href="/admin/blog/bulk">
+                  <Upload className="mr-2 h-4 w-4" />
+                  Bulk Import
                 </Link>
               </Button>
             </div>

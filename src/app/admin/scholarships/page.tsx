@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import Link from 'next/link';
-import { PlusCircle, MoreHorizontal, Loader2 } from 'lucide-react';
+import { PlusCircle, MoreHorizontal, Loader2, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -67,14 +67,24 @@ export default function AdminScholarshipsPage() {
               Manage your scholarship listings.
             </CardDescription>
           </div>
-          <Button asChild size="sm" className="gap-1">
-            <Link href="/admin/generate">
-              <PlusCircle className="h-3.5 w-3.5" />
-              <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                Add Scholarship
-              </span>
-            </Link>
-          </Button>
+          <div className="flex gap-2">
+            <Button asChild size="sm" variant="outline" className="gap-1">
+              <Link href="/admin/scholarships/bulk">
+                <Upload className="h-3.5 w-3.5" />
+                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                  Bulk Import
+                </span>
+              </Link>
+            </Button>
+            <Button asChild size="sm" className="gap-1">
+              <Link href="/admin/generate">
+                <PlusCircle className="h-3.5 w-3.5" />
+                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                  Add Scholarship
+                </span>
+              </Link>
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
